@@ -1,4 +1,4 @@
-# FES Battery Monitor — STM32L072 Mock Test Harness
+﻿# FES Battery Monitor — STM32L072 Mock Test Harness
 
 A firmware prototype for an **aerospace Fire Extinguisher System (FES)** battery monitoring node, developed and validated on the **STM32L072CZY6TR Discovery board** (MB1296D). This repository contains the full mock sensor test harness — no real battery hardware required to run it.
 
@@ -14,14 +14,14 @@ The **mock test harness** in this repository allows the full FES firmware logic 
 
 ## Hardware
 
-| Component | Details |
+| Component                | Details |
 |---|---|
-| Microcontroller | STM32L072CZY6TR (Cortex-M0+, 192 KB Flash, 20 KB RAM) |
-| Development board | STM32L072 Discovery — MB1296D |
+| Microcontroller          | STM32L072CZY6TR (Cortex-M0+, 192 KB Flash, 20 KB RAM) |
+| Development board        | STM32L072 Discovery — MB1296D |
 | Target hardware (future) | STM32U585RIT6 with RRC2037 smart battery and RAK11160 LoRaWAN module |
-| LED — Green | External LED + 1 kΩ resistor → PA5 (or onboard LD2) |
-| LED — Red | External LED + 1 kΩ resistor → PA9 |
-| Debug output | USART2 (PA2) → ST-Link virtual COM port → PuTTY at 115200 baud |
+| LED — Green              | External LED + 1 kΩ resistor → PA5 (or onboard LD2) |
+| LED — Red                | External LED + 1 kΩ resistor → PA9 |
+| Debug output             | USART2 (PA2) → ST-Link virtual COM port → PuTTY at 115200 baud |
 
 ---
 
@@ -49,12 +49,12 @@ Core/
 
 All mock values are driven by `HAL_GetTick()` elapsed time, producing repeating waveforms that automatically exercise every alarm threshold:
 
-| Channel | Waveform | Range | Period | Alarm triggered |
+| Channel                 | Waveform      | Range    | Period | Alarm triggered    |
 |---|---|---|---|---|
-| Voltage | Sine wave | 20–35 V | 60 s | OVERVOLTAGE > 32 V |
-| Current | Sawtooth ramp | 0–30 A | 40 s | OVERCURRENT > 25 A |
-| Temperature | Sine wave | 20–95 °C | 80 s | OVERTEMP > 85 °C |
-| State of charge | Linear decay | 100→0 % | 120 s | LOW_SOC < 20 % |
+| Voltage                 | Sine wave     | 20–35 V  | 60 s   | OVERVOLTAGE > 32 V |
+| Current                 | Sawtooth ramp | 0–30 A   | 40 s   | OVERCURRENT > 25 A |
+| Temperature             | Sine wave     | 20–95 °C | 80 s   | OVERTEMP > 85 °C   |
+| State of charge         | Linear decay  | 100→0 %  | 120 s  | LOW_SOC < 20 %     |
 
 ---
 
@@ -62,28 +62,28 @@ All mock values are driven by `HAL_GetTick()` elapsed time, producing repeating 
 
 Each measurement cycle evaluates eight alarm conditions packed into a single byte:
 
-| Bit | Flag | Condition |
+| Bit             | Flag            | Condition |
 |---|---|---|
-| 0x01 | OVERVOLTAGE | V > 32,000 mV (mock) / 8,600 mV (real) |
-| 0x02 | UNDERVOLTAGE | V < 20,000 mV (mock) / 6,000 mV (real) |
-| 0x04 | OVERCURRENT | I > 25,000 mA (mock) / 4,000 mA (real) |
-| 0x08 | OVERTEMP | T > 85.0 °C |
-| 0x10 | UNDERTEMP | T < −40.0 °C |
-| 0x20 | LOW_SOC | SOC < 20 % |
-| 0x40 | SENSOR_FAULT | I²C read failure |
-| 0x80 | LORA_FAULT | LoRa TX failure |
+| 0x01            | OVERVOLTAGE     | V > 32,000 mV (mock) / 8,600 mV (real) |
+| 0x02            | UNDERVOLTAGE    | V < 20,000 mV (mock) / 6,000 mV (real) |
+| 0x04            | OVERCURRENT     | I > 25,000 mA (mock) / 4,000 mA (real) |
+| 0x08            | OVERTEMP        | T > 85.0 °C |
+| 0x10            | UNDERTEMP       | T < −40.0 °C |
+| 0x20            | LOW_SOC         | SOC < 20 % |
+| 0x40            | SENSOR_FAULT    | I²C read failure |
+| 0x80            | LORA_FAULT      | LoRa TX failure |
 
 ---
 
 ## LED Behaviour
 
-| Event | Green LED | Red LED |
+| Event                    | Green LED  | Red LED       |
 |---|---|---|
-| Power-on self-test | Flash once | Flash once |
-| Sensor OK, no alarms | Solid 1 s | Off |
-| Any alarm active | Off | Solid 1 s |
-| LoRa TX success | 3× blink | Off |
-| I²C / sensor fault | Off | 5× fast blink |
+| Power-on self-test       | Flash once | Flash once    |
+| Sensor OK, no alarms     | Solid 1 s  | Off           |
+| Any alarm active         | Off        | Solid 1 s     |
+| LoRa TX success          | 3× blink   | Off           |
+| I²C / sensor fault       | Off        | 5× fast blink |
 
 ---
 
@@ -92,22 +92,22 @@ Each measurement cycle evaluates eight alarm conditions packed into a single byt
 15-byte payload transmitted on LoRaWAN port 2 (unconfirmed uplink):
 
 ```
-Byte  Field         Type     Unit
-[0]   moduleId      uint8    —
-[1-2] sequence      uint16   —
-[3-4] voltage_mV    uint16   mV
-[5-6] current_mA    int16    mA  (negative = charging)
-[7-8] temp_dC       int16    °C × 10
-[9]   soc_pct       uint8    %
-[10]  alarmFlags    uint8    bitmask (see above)
-[11-14] timestampMs uint32   ms since boot
+Byte    Field         Type     Unit
+[0]     moduleId      uint8    —
+[1-2]   sequence      uint16   —
+[3-4]   voltage_mV    uint16   mV
+[5-6]   current_mA    int16    mA  (negative = charging)
+[7-8]   temp_dC       int16    °C × 10
+[9]     soc_pct       uint8    %
+[10]    alarmFlags    uint8    bitmask (see above)
+[11-14] timestampMs   uint32   ms since boot
 ```
 
 All multi-byte fields are little-endian (struct layout).
 
 ---
 
-## Serial Debug Output
+## Serial Debug Output  (an output example from the puTTY Serial channel)
 
 Connect PuTTY (or any terminal) to the ST-Link virtual COM port at **115200 baud, 8N1, no flow control**. Example output:
 
@@ -139,35 +139,6 @@ Connect PuTTY (or any terminal) to the ST-Link virtual COM port at **115200 baud
 
 No external hardware is required. The board runs standalone using mock data.
 
----
 
-## Switching to Real Hardware
 
-To target the real RRC2037 battery and RAK11160 LoRaWAN module:
 
-1. Remove `FES_MOCK_SENSORS` from the preprocessor symbols
-2. Connect the RRC2037 to I²C1 (PB6=SCL, PB7=SDA) with 4.7 kΩ pull-ups
-3. Pre-provision the RAK11160 with DEVEUI, APPEUI, and APPKEY via AT commands
-4. Connect the LoRa antenna before powering the RAK11160
-5. Rebuild and flash
-
----
-
-## Target Hardware — STM32U585RIT6
-
-The production PCB uses the STM32U585RIT6 (Cortex-M33, TrustZone, 2 MB Flash). A separate driver `FesNode_U585.hpp/.cpp` is included for that target with the correct pin mapping:
-
-| Peripheral | Pins | Function |
-|---|---|---|
-| I2C2 | PB12/PB13 | RRC2037 battery (internal I²C) |
-| USART5 | PC12/PD2 | RAK11160 LoRaWAN |
-| USART1 | PB6/PB7 | Debug UART |
-| GPIO | PC8 | EN_3V3_RAK (active HIGH) |
-| GPIO | PC9 | ST_BOOT (LOW = normal) |
-| GPIO | PC10 | #WAKE_OUT (active LOW) |
-
----
-
-## License
-
-This project is proprietary aerospace firmware. All rights reserved.
